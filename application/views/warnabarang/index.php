@@ -36,7 +36,13 @@
                                 <tr>
                                     <td><?= $i++ ?></td>
                                     <td><?= $warnas->nama_warna ?></td>
-                                    <td style="background-color: <?= $warnas->kode_warna ?>;"></td>
+                                    <td>
+                                        <div class="d-flex flex-row bd-highlight mb-3 align-items-center">
+                                            <?= $warnas->kode_warna ?>
+                                            <div class="" style="background-color: <?= $warnas->kode_warna ?>; width:100px; height: 20px; margin-left:10px;">
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td><a href="<?= site_url('WarnaBarangJadi/edit/' . $warnas->id) ?>" class="btn btn-warning btn-sm">Edit Warna</a> <a class="btn btn-danger btn-sm" href="<?= site_url('WarnaBarangJadi/delete/' . $warnas->id) ?>" onclick="return confirm('Apakah Anda Yakin Ingin Menghapus Warna <?= $warnas->nama_warna ?>')">Hapus</a></td>
                                 </tr>
                             <?php } ?>

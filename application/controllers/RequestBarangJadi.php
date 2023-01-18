@@ -28,47 +28,40 @@ class RequestBarangJadi extends CI_Controller
         $data = [
             'dataapi' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/requestbarangjadi/create/')),
         ];
+
         $this->load->view('layout/header');
-        $this->load->view('requestbarangjadi/create', $data);
+        $this->load->view('requestbarangjadi/tambah', $data);
         $this->load->view('layout/footer');
     }
 
-    function detailBarangJadi()
-    {
-        if (isset($_POST['submit'])) {
-            $data = [
-                'id' => $this->input->post('barangJadiId'),
-            ];
-        }
-        $data['detailbarangjadi'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/requestbarangjadi/detailbarangjadi/' . $data['id']));
-        $this->load->view('layout/header');
-        $this->load->view('requestbarangjadi/create_request', $data);
-        $this->load->view('layout/footer');
-    }
 
-    function do_create()
+    function doCreate()
     {
         if (isset($_POST['submit'])) {
             $data = array(
-                'barang_jadi_id' => $this->input->post('barang_jadi_id'),
+                'jenis_barang_jadi_id' => $this->input->post('jenis_barang_jadi_id'),
+                'warna_barang_jadi_id' => $this->input->post('warna_barang_jadi_id'),
+                'kode_barang' => $this->input->post('kode_barang'),
+                'nama_barang' => $this->input->post('nama_barang'),
                 'quantitas' => $this->input->post('quantitas'),
-                'tanggal_permintaan' => $this->input->post('tanggal_permintaan'),
+                'tanggal_permintaan' => date('Y-m-d'),
                 'tanggal_pengiriman' => $this->input->post('tanggal_pengiriman'),
+                'status' => 0,
             );
 
             $insert = $this->curl->simple_post('http://127.0.0.1:8000/requestbarangjadi/', $data, array(CURLOPT_BUFFERSIZE => 10));
-            var_dump($insert);
+
 
             if ($insert) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                Data Request Barang Jadi berhasil ditambahkan!
+                Request Barang Jadi berhasil ditambahkan!
                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                    
                  </button>
                </div>');
             } else {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                Data request Barang Jadi Gagal ditambahkan!
+                Request Barang Jadi Gagal ditambahkan!
                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                    
                  </button>
@@ -80,33 +73,67 @@ class RequestBarangJadi extends CI_Controller
 
     function edit($id)
     {
-        $data['detailbarangjadi'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/requestbarangjadi/' . $id . '/edit'));
+        $data['requestbarangjadi'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/requestbarangjadi/' . $id . '/edit'));
         $this->load->view('layout/header');
         $this->load->view('requestbarangjadi/edit', $data);
         $this->load->view('layout/footer');
     }
 
-    function do_edit()
+    function doEdit()
     {
         if (isset($_POST['submit'])) {
             $data = array(
                 'id' => $this->input->post('id'),
-                'barang_jadi_id' => $this->input->post('barang_jadi_id'),
+                'jenis_barang_jadi_id' => $this->input->post('jenis_barang_jadi_id'),
+                'warna_barang_jadi_id' => $this->input->post('warna_barang_jadi_id'),
+                'kode_barang' => $this->input->post('kode_barang'),
+                'nama_barang' => $this->input->post('nama_barang'),
+                'quantitas' => $this->input->post('quantitas'),
                 'tanggal_permintaan' => $this->input->post('tanggal_permintaan'),
                 'tanggal_pengiriman' => $this->input->post('tanggal_pengiriman'),
             );
+
             $update =  $this->curl->simple_put('http://127.0.0.1:8000/requestbarangjadi/' . $data['id'], $data, array(CURLOPT_BUFFERSIZE => 10));
+
+
             if ($update) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                Update Data Request Barang Jadi Berhasil
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                </button>
-              </div>');
+                Update Request Barang Jadi Berhasil Diubah!
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                   
+                 </button>
+               </div>');
             } else {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                Update Data Request Barang Jadi Gagal<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-              </button>
-            </div>');
+                Update Request Barang Jadi Gagal diubah!
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                   
+                 </button>
+               </div>');
+            }
+            redirect('RequestBarangJadi');
+        }
+    }
+
+    function delete($id)
+    {
+        if (empty($id)) {
+            redirect('RequestBarangJadi');
+        } else {
+            $delete = $this->curl->simple_delete('http://127.0.0.1:8000/requestbarangjadi/' . $id, array(CURLOPT_BUFFERSIZE => 10));
+            if ($delete) {
+                $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                Delete Request Barang Jadi Berhasil dihapus!
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                   
+                 </button>
+               </div>');
+            } else {
+                $this->session->set_flashdata('hasil', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Delete Request Barang Jadi Gagal dihapus!
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                 </button>
+               </div>');
             }
             redirect('RequestBarangJadi');
         }

@@ -10,7 +10,7 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    Data Request Barang Jadi
+                    Request Barang Jadi
                 </div>
                 <div class="card-body">
                     <table id="datatablesSimple">
@@ -18,10 +18,13 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama Barang</th>
-                                <th>Kuantitas</th>
+                                <th>Kode Barang</th>
+                                <th>Jenis Barang</th>
+                                <th>Warna Barang</th>
+                                <th>Quantitas</th>
                                 <th>Tanggal Permintaan</th>
                                 <th>Tanggal Pengiriman</th>
-                                <th>Warna Barang</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -29,10 +32,13 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama Barang</th>
-                                <th>Kuantitas</th>
+                                <th>Kode Barang</th>
+                                <th>Jenis Barang</th>
+                                <th>Warna Barang</th>
+                                <th>Stock</th>
                                 <th>Tanggal Permintaan</th>
                                 <th>Tanggal Pengiriman</th>
-                                <th>Warna Barang</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
@@ -41,21 +47,33 @@
                             foreach ($request_barang_jadi->data as $jadi) { ?>
                                 <tr>
                                     <td><?= $i++ ?></td>
-                                    <td><?= $jadi->barang_jadis->nama_barang ?></td>
-                                    <td><?= $jadi->quantitas ?></td>
-                                    <?php $tanggalpermintaan = date('Y-m-d', strtotime($jadi->tanggal_permintaan)); ?>
-                                    <td> <?= tanggal_indo($tanggalpermintaan, TRUE) ?></td>
-                                    <?php $tanggalpengiriman = date('Y-m-d', strtotime($jadi->tanggal_pengiriman)); ?>
-                                    <td><?= tanggal_indo($tanggalpengiriman, TRUE) ?></td>
+                                    <td><?= $jadi->nama_barang ?></td>
+                                    <td><?= $jadi->kode_barang ?></td>
+                                    <td><?= $jadi->jenis_barang_jadis->nama_jenis ?></td>
                                     <td>
                                         <div class="d-flex flex-row bd-highlight mb-3 align-items-center">
-                                            <?= $jadi->barang_jadis->warna_barang_jadis->nama_warna ?>
-                                            <div class="" style="background-color: <?= $jadi->barang_jadis->warna_barang_jadis->kode_warna ?>; width:100px; height: 20px; margin-left:10px;">
+                                            <?= $jadi->warna_barang_jadis->nama_warna ?>
+                                            <div class="" style="background-color: <?= $jadi->warna_barang_jadis->kode_warna ?>; width:100px; height: 20px; margin-left:10px;">
                                             </div>
                                         </div>
                                     </td>
-
-                                    <td><a href="<?= site_url('RequestBarangJadi/edit/' . $jadi->id) ?>" class="btn btn-success btn-sm">Edit Barang</a> <a class="btn btn-danger btn-sm" href="<?= site_url('BarangJadi/delete/' . $jadi->id) ?>">Hapus</a></td>
+                                    <td><?= $jadi->quantitas ?> Pcs</td>
+                                    <td>
+                                        <?php $tanggal = date('Y-m-d', strtotime($jadi->tanggal_permintaan)); ?>
+                                        <?= tanggal_indo($tanggal, TRUE) ?></td>
+                                    <td>
+                                        <?php $tanggal = date('Y-m-d', strtotime($jadi->tanggal_pengiriman)); ?>
+                                        <?= tanggal_indo($tanggal, TRUE) ?></td>
+                                    <td>
+                                        <?php if ($jadi->status == 0) { ?>
+                                            <span class="badge bg-danger">Belum Diproses</span>
+                                        <?php } elseif ($jadi->status == 1) { ?>
+                                            <span class="badge bg-primary">Sedang Diproses</span>
+                                        <?php } elseif ($jadi->status == 2) { ?>
+                                            <span class="badge bg-success">Sudah Diproses</span>
+                                        <?php } ?>
+                                    </td>
+                                    <td><a href="<?= site_url('RequestBarangJadi/edit/' . $jadi->id) ?>" class="btn btn-success btn-sm">Edit Request</a> <a class="btn btn-danger btn-sm" href="<?= site_url('RequestBarangJadi/delete/' . $jadi->id) ?>" onclick="return confirm('Apakah Anda Yakin Ingin Menghapus Jenis <?= $jadi->nama_barang ?>')">Hapus</a></td>
                                 </tr>
                             <?php } ?>
                         </tbody>
