@@ -8,6 +8,7 @@
     <meta name="author" content="" />
     <title>Dashboard - SB Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
     <link href="<?= base_url('assets/') ?>css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -88,15 +89,16 @@
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Menu</div>
                         <a class="nav-link" href="<?= site_url('dashboard') ?>">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <div class="sb-nav-link-icon"><i class="ti ti-home-2 text-white"></i>
+                            </div>
                             Dashboard
                         </a>
                         <a class="nav-link" href="<?= site_url('RequestBarangJadi') ?>">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <div class="sb-nav-link-icon"><i class="ti ti-shirt text-white"></i></div>
                             List Request Barang Jadi
                         </a>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            <div class="sb-nav-link-icon"><i class="ti ti-category-2 text-white"></i></div>
                             Kategori Barang Jadi
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
@@ -107,7 +109,7 @@
                             </nav>
                         </div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#alat" aria-expanded="false" aria-controls="collapseLayouts">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            <div class="sb-nav-link-icon"><i class="ti ti-settings text-white"></i></div>
                             Data Produksi
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
@@ -115,10 +117,25 @@
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" href="<?= site_url('Produksi') ?>">Belum Diproduksi</a>
                                 <a class="nav-link" href="<?= site_url('Produksi/sudahproduksi') ?>">Sudah Diproduksi</a>
-                                <a class="nav-link" href="<?= site_url('BarangMentah') ?>">Barang Mentah</a>
                             </nav>
                         </div>
-
+                        <a class="nav-link" href="<?= site_url('BarangMentah') ?>">
+                            <div class="sb-nav-link-icon">
+                                <i class="ti ti-archive text-white"></i>
+                            </div>
+                            Barang Mentah
+                        </a>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#kirim" aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="ti ti-cube-send text-white"></i></div>
+                            Pengiriman
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="kirim" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="<?= site_url('Pengiriman') ?>">Belum Dikirim</a>
+                                <a class="nav-link" href="<?= site_url('Pengiriman/sudahkirim') ?>">Sudah Dikirim</a>
+                            </nav>
+                        </div>
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">

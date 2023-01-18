@@ -1,14 +1,14 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Data Belum Diproduksi</h1>
+            <h1 class="mt-4">Data Belum Dikirim</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item active">Data Belum Diproduksi</li>
+                <li class="breadcrumb-item active">Data Belum Dikirim</li>
             </ol>
             <?php echo $this->session->flashdata('hasil'); ?>
             <?php if (empty($barangjadi->data)) { ?>
                 <div class="alert alert-danger" role="alert">
-                    Data Belum Diproduksi Belum Tersedia!
+                    Data Barang Jadi Belum Harus Dikirim
                 </div>
             <?php } else { ?>
                 <div class="row">
@@ -28,7 +28,7 @@
                                     Tanggal Permintaan: <?= tanggal_indo($tanggalMinta, TRUE) ?><br>
                                     Tanggal Pengiriman: <?= tanggal_indo($tanggalKirim, TRUE) ?><br>
                                     <div class="d-flex flex-row bd-highlight mt-3">
-                                        <a href="<?= site_url('Produksi/masukProduksi/' . $jadi->id) ?>" class="btn btn-primary">Masuk Produksi</a>
+                                        <a href="<?= site_url('Pengiriman/kirimbarang/' . $jadi->id) ?>" class="btn btn-primary">Kirim Barang</a>
                                     </div>
                                 </div>
                             </div>

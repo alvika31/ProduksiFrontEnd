@@ -68,10 +68,13 @@
                                         <?php if ($jadi->status == 0) { ?>
                                             <span class="badge bg-danger">Belum Diproses</span>
                                         <?php } elseif ($jadi->status == 1) { ?>
-                                            <span class="badge bg-primary">Sedang Diproses</span>
+                                            <span class="badge bg-warning">Sedang Diproses</span>
                                         <?php } elseif ($jadi->status == 2) { ?>
-                                            <span class="badge bg-success">Sudah Diproses</span>
+                                            <span class="badge bg-primary">Sudah Diproses</span>
+                                        <?php } elseif ($jadi->status == 3) { ?>
+                                            <span class="badge bg-success">Sudah Dikirim</span>
                                         <?php } ?>
+
                                     </td>
                                     <td><a href="<?= site_url('RequestBarangJadi/edit/' . $jadi->id) ?>" class="btn btn-success btn-sm">Edit Request</a> <a class="btn btn-danger btn-sm" href="<?= site_url('RequestBarangJadi/delete/' . $jadi->id) ?>" onclick="return confirm('Apakah Anda Yakin Ingin Menghapus Jenis <?= $jadi->nama_barang ?>')">Hapus</a></td>
                                 </tr>

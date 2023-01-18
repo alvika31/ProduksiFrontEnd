@@ -1,9 +1,9 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Produksi Barang Jadi</h1>
+            <h1 class="mt-4">Kirim Barang Jadi</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item active">Produksi Barang Jadi</li>
+                <li class="breadcrumb-item active">Kirim Barang Jadi</li>
             </ol>
             <?php echo $this->session->flashdata('hasil'); ?>
             <div class="row">
@@ -71,30 +71,21 @@
                 <div class="col-6">
                     <div class="card shadow p-2 bg-body rounded">
                         <div class="card-body">
-
-                            <?php if (($barangjadi->data->barang_jadi->status == 2) || ($barangjadi->data->barang_jadi->status == 3)) { ?>
-                                <h5 class="card-title">Barang Jadi Sudah Diproduksi</h5>
+                            <h5 class="card-title">Kirim Barang</h5>
+                            <?php if ($barangjadi->data->barang_jadi->status == 3) { ?>
+                                <?php foreach ($barangjadi->data->barang_jadi->pengiriman as $kirim) { ?>
+                                    Tanggal Pengiriman: <?= $kirim->tanggal_pengiriman ?>
+                                <?php } ?>
                             <?php } else { ?>
-                                <h5 class="card-title">Pilih Barang Mentah untuk diproduksi</h5>
-                                <form action="<?= site_url('Produksi/do_create') ?>" method="post">
+                                <form action="<?= site_url('Pengiriman/do_kirim') ?>" method="post">
+                                    <label class="mt-3" for="">Tanggal Pengiriman:</label>
                                     <input type="hidden" name="request_barang_jadi_id" value="<?= $barangjadi->data->barang_jadi->id ?>">
-                                    <label for="exampleInputEmail1" class="form-label">Pilih Barang:</label>
-                                    <select class="form-select" name="barang_mentah_id" aria-label="Default select example">
-                                        <?php foreach ($barangjadi->data->barang_mentah as $barangmentah) { ?>
-                                            <option value="<?= $barangmentah->id ?>"><?= $barangmentah->nama_barang_mentah ?> | <?= $barangmentah->warna_barang_mentah ?> | Stock <?= $barangmentah->stock_mentah ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <label class="mt-3" for="">Quantitas:</label>
-                                    <input type="number" name="quantitas" class="form-control" id="">
-                                    <label class="mt-3" for="">Tanggal Masuk Produksi:</label>
-                                    <input type="date" name="tanggal_produksi" class="form-control" id="">
-                                    <input type="submit" value="Add Produksi" class="mt-4 btn btn-primary" name="submit">
-                                    <input type="submit" value="Done Produksi" class="mt-4 btn btn-success" name="done">
+                                    <input type="date" name="tanggal_pengiriman" class="form-control" id="">
+                                    <input type="submit" value="Kirim Barang" class="mt-4 btn btn-primary" name="submit">
                                 </form>
                             <?php } ?>
                         </div>
                     </div>
                 </div>
             </div>
-
     </main>
