@@ -8,7 +8,7 @@
             <?php echo $this->session->flashdata('hasil'); ?>
             <?php if (empty($barangjadi->data)) { ?>
                 <div class="alert alert-danger" role="alert">
-                    Data Barang Jadi Belum Harus Dikirim
+                    Data Harus Dikirim Tidak Tersedia
                 </div>
             <?php } else { ?>
                 <div class="row">

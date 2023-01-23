@@ -1,25 +1,33 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use GuzzleHttp\Client;
+
 class WarnaBarangJadi extends CI_Controller
 {
-    var $API = "";
-
-    function __construct()
+    private $_client;
+    public function __construct()
     {
         parent::__construct();
-        $this->API = "http://127.0.0.1:8000/";
+        $this->_client = new Client([
+            'base_uri' => 'http://103.31.39.238/',
+            'headers' => [
+                'X-Authorization' => 'eIvUfN3HdGvjwYR415UaAiFM13mIuvXvaPCaS3cWW4HjIDQjdPrETOCka8EZfcbj',
+            ]
+        ]);
         $this->load->library('session');
-        $this->load->library('curl');
         $this->load->helper('form');
         $this->load->helper('url');
     }
 
     public function index()
     {
+        $response = $this->_client->request('GET', 'warnabarang');
+
         $data = [
-            'warna' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/warnabarang/')),
+            'warna' => json_decode($response->getBody()->getContents()),
         ];
+
         $this->load->view('layout/header');
         $this->load->view('warnabarang/index', $data);
         $this->load->view('layout/footer');
@@ -40,10 +48,12 @@ class WarnaBarangJadi extends CI_Controller
                 'kode_warna' => $this->input->post('kode_warna'),
             );
 
-            $insert = $this->curl->simple_post('http://127.0.0.1:8000/warnabarang/', $data, array(CURLOPT_BUFFERSIZE => 10));
-            var_dump($insert);
+            $response = $this->_client->request('POST', 'warnabarang', [
+                'form_params' => $data
+            ]);
+            $insert = json_decode($response->getBody()->getContents());
 
-            if ($insert) {
+            if ($insert == false) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 Data Berhasil ditambahkan
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -64,7 +74,14 @@ class WarnaBarangJadi extends CI_Controller
 
     function edit($id)
     {
-        $data['warna'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/warnabarang/' . $id . '/edit'));
+        $response = $this->_client->request('GET', 'warnabarang/' . $id . '/edit', [
+            // Params
+
+        ]);
+        $data = [
+            'warna' => json_decode($response->getBody()->getContents(), true),
+        ];
+
         $this->load->view('layout/header');
         $this->load->view('warnabarang/edit', $data);
         $this->load->view('layout/footer');
@@ -78,8 +95,12 @@ class WarnaBarangJadi extends CI_Controller
                 'nama_warna' => $this->input->post('nama_warna'),
                 'kode_warna' => $this->input->post('kode_warna'),
             );
-            var_dump($data);
-            $update =  $this->curl->simple_put('http://127.0.0.1:8000/warnabarang/' . $data['id'], $data, array(CURLOPT_BUFFERSIZE => 10));
+            $response = $this->_client->request('PUT', 'warnabarang/' . $data['id'], [
+                'form_params' => $data
+            ]);
+
+            $update = json_decode($response->getBody()->getContents(), true);
+
             var_dump($update);
 
             if ($update) {
@@ -105,7 +126,8 @@ class WarnaBarangJadi extends CI_Controller
         if (empty($id)) {
             redirect('WarnaBarangJadi');
         } else {
-            $delete = $this->curl->simple_delete('http://127.0.0.1:8000/warnabarang/' . $id, array(CURLOPT_BUFFERSIZE => 10));
+            $delete = $this->_client->request('DELETE', 'warnabarang/' . $id, []);
+
             if ($delete) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 Delete Warna Barang Jadi Berhasil

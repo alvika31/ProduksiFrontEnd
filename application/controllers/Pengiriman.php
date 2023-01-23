@@ -1,23 +1,35 @@
 <?php
+
+use GuzzleHttp\Client;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Pengiriman extends CI_Controller
 {
+    private $_client;
     function __construct()
     {
         parent::__construct();
-        $this->API = "http://127.0.0.1:8000/";
+        $this->_client = new Client([
+            'base_uri' => 'http://103.31.39.238/',
+            'headers' => [
+                'X-Authorization' => 'eIvUfN3HdGvjwYR415UaAiFM13mIuvXvaPCaS3cWW4HjIDQjdPrETOCka8EZfcbj',
+            ]
+        ]);
         $this->load->library('session');
-        $this->load->library('curl');
         $this->load->helper('form');
         $this->load->helper('url');
     }
 
     function index()
     {
+
+        $response = $this->_client->request('GET', 'pengiriman');
+
         $data = [
-            'barangjadi' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/pengiriman/')),
+            'barangjadi' => json_decode($response->getBody()->getContents()),
         ];
+
         $this->load->view('layout/header');
         $this->load->view('pengiriman/index', $data);
         $this->load->view('layout/footer');
@@ -25,7 +37,15 @@ class Pengiriman extends CI_Controller
 
     function kirimbarang($id)
     {
-        $data['barangjadi'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/produksi/addproduksi/' . $id));
+
+        $response = $this->_client->request('GET', 'produksi/addproduksi/' . $id, [
+            // Params
+
+        ]);
+        $data = [
+            'barangjadi' => json_decode($response->getBody()->getContents(), true),
+        ];
+
         $this->load->view('layout/header');
         $this->load->view('pengiriman/create', $data);
         $this->load->view('layout/footer');
@@ -38,9 +58,14 @@ class Pengiriman extends CI_Controller
                 'request_barang_jadi_id' => $this->input->post('request_barang_jadi_id'),
                 'tanggal_pengiriman' => $this->input->post('tanggal_pengiriman'),
             );
-            $insert = $this->curl->simple_post('http://127.0.0.1:8000/pengiriman/', $data, array(CURLOPT_BUFFERSIZE => 512));
 
-            if ($insert) {
+            $response = $this->_client->request('POST', 'pengiriman', [
+                'form_params' => $data
+            ]);
+            $insert = json_decode($response->getBody()->getContents());
+
+
+            if ($insert == false) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                Berhasil Dikirim
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -61,8 +86,10 @@ class Pengiriman extends CI_Controller
 
     function sudahkirim()
     {
+        $response = $this->_client->request('GET', 'pengiriman/sudahkirim');
+
         $data = [
-            'barangjadi' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/pengiriman/sudahkirim/')),
+            'barangjadi' => json_decode($response->getBody()->getContents()),
         ];
         $this->load->view('layout/header');
         $this->load->view('pengiriman/sudahkirim', $data);

@@ -1,22 +1,34 @@
 <?php
+
+use GuzzleHttp\Client;
+
 defined('BASEPATH') or exit('No direct script access allowed');
+
 
 class RequestBarangJadi extends CI_Controller
 {
+    private $_client;
     function __construct()
     {
         parent::__construct();
-        $this->API = "http://127.0.0.1:8000/";
+        $this->_client = new Client([
+            'base_uri' => 'http://103.31.39.238/',
+            'headers' => [
+                'X-Authorization' => 'eIvUfN3HdGvjwYR415UaAiFM13mIuvXvaPCaS3cWW4HjIDQjdPrETOCka8EZfcbj',
+            ]
+        ]);
+
         $this->load->library('session');
-        $this->load->library('curl');
         $this->load->helper('form');
         $this->load->helper('url');
     }
 
     function index()
     {
+        $response = $this->_client->request('GET', 'requestbarangjadi');
+
         $data = [
-            'request_barang_jadi' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/requestbarangjadi/')),
+            'request_barang_jadi' => json_decode($response->getBody()->getContents()),
         ];
         $this->load->view('layout/header');
         $this->load->view('requestbarangjadi/index', $data);
@@ -25,9 +37,13 @@ class RequestBarangJadi extends CI_Controller
 
     function create()
     {
+        $response = $this->_client->request('GET', 'requestbarangjadi/create/');
+
         $data = [
-            'dataapi' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/requestbarangjadi/create/')),
+            'dataapi' => json_decode($response->getBody()->getContents()),
         ];
+
+        // var_dump($data['dataapi']);
 
         $this->load->view('layout/header');
         $this->load->view('requestbarangjadi/tambah', $data);
@@ -49,10 +65,13 @@ class RequestBarangJadi extends CI_Controller
                 'status' => 0,
             );
 
-            $insert = $this->curl->simple_post('http://127.0.0.1:8000/requestbarangjadi/', $data, array(CURLOPT_BUFFERSIZE => 10));
+            $response = $this->_client->request('POST', 'requestbarangjadi', [
+                'form_params' => $data
+            ]);
+            $insert = json_decode($response->getBody()->getContents());
 
 
-            if ($insert) {
+            if ($insert == false) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 Request Barang Jadi berhasil ditambahkan!
                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -73,7 +92,15 @@ class RequestBarangJadi extends CI_Controller
 
     function edit($id)
     {
-        $data['requestbarangjadi'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/requestbarangjadi/' . $id . '/edit'));
+
+        $response = $this->_client->request('GET', 'requestbarangjadi/' . $id . '/edit', [
+            // Params
+
+        ]);
+        $data = [
+            'requestbarangjadi' => json_decode($response->getBody()->getContents(), true),
+        ];
+
         $this->load->view('layout/header');
         $this->load->view('requestbarangjadi/edit', $data);
         $this->load->view('layout/footer');
@@ -93,7 +120,11 @@ class RequestBarangJadi extends CI_Controller
                 'tanggal_pengiriman' => $this->input->post('tanggal_pengiriman'),
             );
 
-            $update =  $this->curl->simple_put('http://127.0.0.1:8000/requestbarangjadi/' . $data['id'], $data, array(CURLOPT_BUFFERSIZE => 10));
+            $response = $this->_client->request('PUT', 'requestbarangjadi/' . $data['id'], [
+                'form_params' => $data
+            ]);
+
+            $update = json_decode($response->getBody()->getContents(), true);
 
 
             if ($update) {
@@ -120,7 +151,10 @@ class RequestBarangJadi extends CI_Controller
         if (empty($id)) {
             redirect('RequestBarangJadi');
         } else {
-            $delete = $this->curl->simple_delete('http://127.0.0.1:8000/requestbarangjadi/' . $id, array(CURLOPT_BUFFERSIZE => 10));
+
+            $delete = $this->_client->request('DELETE', 'requestbarangjadi/' . $id, []);
+
+
             if ($delete) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 Delete Request Barang Jadi Berhasil dihapus!

@@ -1,23 +1,34 @@
 <?php
+
+use GuzzleHttp\Client;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class JenisBarangJadi extends CI_Controller
 {
+    private $_client;
     function __construct()
     {
         parent::__construct();
-        $this->API = "http://127.0.0.1:8000/";
+        $this->_client = new Client([
+            'base_uri' => 'http://103.31.39.238/',
+            'headers' => [
+                'X-Authorization' => 'eIvUfN3HdGvjwYR415UaAiFM13mIuvXvaPCaS3cWW4HjIDQjdPrETOCka8EZfcbj',
+            ]
+        ]);
         $this->load->library('session');
-        $this->load->library('curl');
         $this->load->helper('form');
         $this->load->helper('url');
     }
 
     public function index()
     {
+        $response = $this->_client->request('GET', 'jenisbarang');
+
         $data = [
-            'jenis_barang' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/jenisbarang/')),
+            'jenis_barang' => json_decode($response->getBody()->getContents()),
         ];
+
         $this->load->view('layout/header');
         $this->load->view('jenisbarang/index', $data);
         $this->load->view('layout/footer');
@@ -37,10 +48,12 @@ class JenisBarangJadi extends CI_Controller
                 'nama_jenis' => $this->input->post('nama_jenis'),
                 'deskripsi_jenis' => $this->input->post('deskripsi_jenis'),
             );
+            $response = $this->_client->request('POST', 'jenisbarang', [
+                'form_params' => $data
+            ]);
+            $insert = json_decode($response->getBody()->getContents());
 
-            $insert = $this->curl->simple_post('http://127.0.0.1:8000/jenisbarang/', $data, array(CURLOPT_BUFFERSIZE => 512));
-
-            if ($insert) {
+            if ($insert == false) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                Jenis Barang Berhasil ditambahkan
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -61,7 +74,15 @@ class JenisBarangJadi extends CI_Controller
 
     function edit($id)
     {
-        $data['jenis'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/jenisbarang/' . $id . '/edit'));
+        $response = $this->_client->request('GET', 'jenisbarang/' . $id . '/edit', [
+            // Params
+
+        ]);
+        $data = [
+            'jenis' => json_decode($response->getBody()->getContents(), true),
+        ];
+
+
         $this->load->view('layout/header');
         $this->load->view('jenisbarang/edit', $data);
         $this->load->view('layout/footer');
@@ -75,8 +96,11 @@ class JenisBarangJadi extends CI_Controller
                 'nama_jenis' => $this->input->post('nama_jenis'),
                 'deskripsi_jenis' => $this->input->post('deskripsi_jenis'),
             );
-            $update =  $this->curl->simple_put('http://127.0.0.1:8000/jenisbarang/' . $data['id'], $data, array(CURLOPT_BUFFERSIZE => 10));
-            var_dump($update);
+            $response = $this->_client->request('PUT', 'jenisbarang/' . $data['id'], [
+                'form_params' => $data
+            ]);
+
+            $update = json_decode($response->getBody()->getContents(), true);
 
             if ($update) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -101,8 +125,9 @@ class JenisBarangJadi extends CI_Controller
         if (empty($id)) {
             redirect('JenisBarangJadi');
         } else {
-            $delete = $this->curl->simple_delete('http://127.0.0.1:8000/jenisbarang/' . $id, array(CURLOPT_BUFFERSIZE => 10));
-            if ($delete) {
+            $response = $this->_client->request('DELETE', 'jenisbarang/' . $id, []);
+
+            if ($response) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 Delete Jenis Barang Jadi Berhasil
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">

@@ -1,22 +1,33 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use GuzzleHttp\Client;
+
 class BarangMentah extends CI_Controller
 {
+    private $_client;
     function __construct()
     {
         parent::__construct();
-        $this->API = "http://127.0.0.1:8000/";
+        $this->_client = new Client([
+            'base_uri' => 'http://103.31.39.238/',
+            'headers' => [
+                'X-Authorization' => 'eIvUfN3HdGvjwYR415UaAiFM13mIuvXvaPCaS3cWW4HjIDQjdPrETOCka8EZfcbj',
+            ]
+        ]);
+
         $this->load->library('session');
-        $this->load->library('curl');
         $this->load->helper('form');
         $this->load->helper('url');
     }
     public function index()
     {
+        $response = $this->_client->request('GET', 'barangmentah');
+
         $data = [
-            'barangmentah' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/barangmentah/')),
+            'barangmentah' => json_decode($response->getBody()->getContents()),
         ];
+
         $this->load->view('layout/header');
         $this->load->view('barangmentah/index', $data);
         $this->load->view('layout/footer');
@@ -38,10 +49,12 @@ class BarangMentah extends CI_Controller
                 'warna_barang_mentah' => $this->input->post('warna_barang_mentah'),
                 'stock_mentah' => $this->input->post('stock_mentah'),
             );
+            $response = $this->_client->request('POST', 'barangmentah', [
+                'form_params' => $data
+            ]);
+            $insert = json_decode($response->getBody()->getContents());
 
-            $insert = $this->curl->simple_post('http://127.0.0.1:8000/barangmentah/', $data, array(CURLOPT_BUFFERSIZE => 512));
-
-            if ($insert) {
+            if ($insert == false) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                Barang Mentah Berhasil ditambahkan
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -62,7 +75,16 @@ class BarangMentah extends CI_Controller
 
     function edit($id)
     {
-        $data['barangmentah'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/barangmentah/' . $id . '/edit'));
+        $response = $this->_client->request('GET', 'barangmentah/' . $id . '/edit/', [
+            // Params
+            'query' => [
+                'wpu-key' => 'rahasia',
+            ]
+        ]);
+        $data = [
+            'barangmentah' => json_decode($response->getBody()->getContents(), true),
+        ];
+        // print_r($data['barangmentah']['data']['0']['id']);
         $this->load->view('layout/header');
         $this->load->view('barangmentah/edit', $data);
         $this->load->view('layout/footer');
@@ -78,9 +100,13 @@ class BarangMentah extends CI_Controller
                 'warna_barang_mentah' => $this->input->post('warna_barang_mentah'),
                 'stock_mentah' => $this->input->post('stock_mentah'),
             );
-            $update =  $this->curl->simple_put('http://127.0.0.1:8000/barangmentah/' . $data['id'], $data, array(CURLOPT_BUFFERSIZE => 10));
 
-            if ($update) {
+            $response = $this->_client->request('PUT', 'barangmentah/' . $data['id'], [
+                'form_params' => $data
+            ]);
+
+            $result = json_decode($response->getBody()->getContents(), true);
+            if ($result) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 Update Barang Mentah Berhasil
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -103,8 +129,15 @@ class BarangMentah extends CI_Controller
         if (empty($id)) {
             redirect('BarangMentah');
         } else {
-            $delete = $this->curl->simple_delete('http://127.0.0.1:8000/barangmentah/' . $id, array(CURLOPT_BUFFERSIZE => 10));
-            if ($delete) {
+            $response = $this->_client->request('DELETE', 'barangmentah/' . $id, [
+                'form_params' => [
+                    'id' => $id,
+                    'wpu-key' => 'rahasia'
+                ]
+            ]);
+
+            $result = json_decode($response->getBody()->getContents(), true);
+            if ($result) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 Delete Barang Mentah Berhasil
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">

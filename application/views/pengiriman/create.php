@@ -10,15 +10,15 @@
                 <div class="col-6">
                     <div class="card shadow p-2 bg-body rounded">
                         <div class="card-body">
-                            <h5 class="card-title"><?= $barangjadi->data->barang_jadi->nama_barang   ?></h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Kode Barang: <?= $barangjadi->data->barang_jadi->kode_barang ?></h6>
-                            Kuantitas: <?= $barangjadi->data->barang_jadi->quantitas ?><br>
-                            Jenis Barang: <?= $barangjadi->data->barang_jadi->jenis_barang_jadis->nama_jenis ?><br>
+                            <h5 class="card-title"><?= $barangjadi['data']['barang_jadi']['nama_barang']   ?></h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Kode Barang: <?= $barangjadi['data']['barang_jadi']['kode_barang'] ?></h6>
+                            Kuantitas: <?= $barangjadi['data']['barang_jadi']['quantitas'] ?><br>
+                            Jenis Barang: <?= $barangjadi['data']['barang_jadi']['jenis_barang_jadis']['nama_jenis'] ?><br>
                             <div class="d-flex flex-row bd-highlight">
-                                Warna Barang: <?= $barangjadi->data->barang_jadi->warna_barang_jadis->nama_warna ?> <div class="ms-2" style="background-color: <?= $barangjadi->data->barang_jadi->warna_barang_jadis->kode_warna ?>; width:100px; height:20px"></div><br>
+                                Warna Barang: <?= $barangjadi['data']['barang_jadi']['warna_barang_jadis']['nama_warna'] ?> <div class="ms-2" style="background-color: <?= $barangjadi['data']['barang_jadi']['warna_barang_jadis']['kode_warna'] ?>; width:100px; height:20px"></div><br>
                             </div>
-                            <?php $tanggalMinta = date('Y-m-d', strtotime($barangjadi->data->barang_jadi->tanggal_permintaan)); ?>
-                            <?php $tanggalKirim = date('Y-m-d', strtotime($barangjadi->data->barang_jadi->tanggal_pengiriman)); ?>
+                            <?php $tanggalMinta = date('Y-m-d', strtotime($barangjadi['data']['barang_jadi']['tanggal_permintaan'])); ?>
+                            <?php $tanggalKirim = date('Y-m-d', strtotime($barangjadi['data']['barang_jadi']['tanggal_pengiriman'])); ?>
                             Tanggal Permintaan: <?= tanggal_indo($tanggalMinta, TRUE) ?><br>
                             Tanggal Pengiriman: <?= tanggal_indo($tanggalKirim, TRUE) ?><br>
                         </div>
@@ -52,14 +52,14 @@
                                 </tfoot>
                                 <tbody>
                                     <?php $i = 1;
-                                    foreach ($barangjadi->data->barang_jadi->produksi as $mentah) { ?>
+                                    foreach ($barangjadi['data']['barang_jadi']['produksi'] as $mentah) { ?>
                                         <tr>
                                             <td><?= $i++ ?></td>
-                                            <td><?= $mentah->barangmentah->nama_barang_mentah ?></td>
-                                            <td><?= $mentah->quantitas ?></td>
-                                            <td><?= $mentah->barangmentah->warna_barang_mentah ?></td>
-                                            <td><?= $mentah->barangmentah->jenis_barang_mentah ?></td>
-                                            <td><?= $mentah->tanggal_produksi ?></td>
+                                            <td><?= $mentah['barangmentah']['nama_barang_mentah'] ?></td>
+                                            <td><?= $mentah['quantitas'] ?></td>
+                                            <td><?= $mentah['barangmentah']['warna_barang_mentah'] ?></td>
+                                            <td><?= $mentah['barangmentah']['jenis_barang_mentah'] ?></td>
+                                            <td><?= $mentah['tanggal_produksi'] ?></td>
 
                                         </tr>
                                     <?php } ?>
@@ -72,14 +72,15 @@
                     <div class="card shadow p-2 bg-body rounded">
                         <div class="card-body">
                             <h5 class="card-title">Kirim Barang</h5>
-                            <?php if ($barangjadi->data->barang_jadi->status == 3) { ?>
-                                <?php foreach ($barangjadi->data->barang_jadi->pengiriman as $kirim) { ?>
-                                    Tanggal Pengiriman: <?= $kirim->tanggal_pengiriman ?>
+                            <?php if ($barangjadi['data']['barang_jadi']['status'] == 3) { ?>
+                                <?php foreach ($barangjadi['data']['barang_jadi']['pengiriman'] as $kirim) { ?>
+                                    <?php $tanggalKirim = date('Y-m-d', strtotime($kirim['tanggal_pengiriman'])); ?>
+                                    Tanggal Pengiriman: <?= tanggal_indo($tanggalKirim, TRUE) ?>
                                 <?php } ?>
                             <?php } else { ?>
                                 <form action="<?= site_url('Pengiriman/do_kirim') ?>" method="post">
                                     <label class="mt-3" for="">Tanggal Pengiriman:</label>
-                                    <input type="hidden" name="request_barang_jadi_id" value="<?= $barangjadi->data->barang_jadi->id ?>">
+                                    <input type="hidden" name="request_barang_jadi_id" value="<?= $barangjadi['data']['barang_jadi']['id'] ?>">
                                     <input type="date" name="tanggal_pengiriman" class="form-control" id="">
                                     <input type="submit" value="Kirim Barang" class="mt-4 btn btn-primary" name="submit">
                                 </form>

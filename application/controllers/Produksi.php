@@ -1,23 +1,36 @@
 <?php
+
+use GuzzleHttp\Client;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Produksi extends CI_Controller
 {
+    private $_client;
     function __construct()
     {
+
         parent::__construct();
-        $this->API = "http://127.0.0.1:8000/";
+        $this->_client = new Client([
+            'base_uri' => 'http://103.31.39.238/',
+            'headers' => [
+                'X-Authorization' => 'eIvUfN3HdGvjwYR415UaAiFM13mIuvXvaPCaS3cWW4HjIDQjdPrETOCka8EZfcbj',
+            ]
+        ]);
+
         $this->load->library('session');
-        $this->load->library('curl');
         $this->load->helper('form');
         $this->load->helper('url');
     }
 
     public function index()
     {
+        $response = $this->_client->request('GET', 'produksi');
+
         $data = [
-            'barangjadi' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/produksi/')),
+            'barangjadi' => json_decode($response->getBody()->getContents()),
         ];
+
         $this->load->view('layout/header');
         $this->load->view('produksi/index', $data);
         $this->load->view('layout/footer');
@@ -26,7 +39,14 @@ class Produksi extends CI_Controller
     function masukProduksi($id)
     {
 
-        $data['barangjadi'] = json_decode($this->curl->simple_get('http://127.0.0.1:8000/produksi/addproduksi/' . $id));
+        $response = $this->_client->request('GET', 'produksi/addproduksi/' . $id, [
+            // Params
+
+        ]);
+        $data = [
+            'barangjadi' => json_decode($response->getBody()->getContents(), true),
+        ];
+
         $this->load->view('layout/header');
         $this->load->view('produksi/create', $data);
         $this->load->view('layout/footer');
@@ -42,9 +62,14 @@ class Produksi extends CI_Controller
                 'tanggal_produksi' => $this->input->post('tanggal_produksi'),
             );
 
-            $insert = $this->curl->simple_post('http://127.0.0.1:8000/produksi/', $data, array(CURLOPT_BUFFERSIZE => 512));
+            $response = $this->_client->request('POST', 'produksi', [
+                'form_params' => $data
+            ]);
+            $insert = json_decode($response->getBody()->getContents());
 
-            if ($insert) {
+
+
+            if ($insert == false) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                Barang Mentah Berhasil ditambahkan Ke Produksi
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -66,7 +91,13 @@ class Produksi extends CI_Controller
             $data = array(
                 'request_barang_jadi_id' => $this->input->post('request_barang_jadi_id'),
             );
-            $updatestatus =  $this->curl->simple_put('http://127.0.0.1:8000/produksi/updatestatusproduksi/' . $data['request_barang_jadi_id'], $data, array(CURLOPT_BUFFERSIZE => 10));
+
+            $response = $this->_client->request('PUT', 'produksi/updatestatusproduksi/' . $data['request_barang_jadi_id'], [
+                'form_params' => $data
+            ]);
+
+            $updatestatus = json_decode($response->getBody()->getContents(), true);
+
             if ($updatestatus) {
                 $this->session->set_flashdata('hasil', '<div class="alert alert-success alert-dismissible fade show" role="alert">
                Produksi Selesai
@@ -88,9 +119,14 @@ class Produksi extends CI_Controller
 
     function sudahproduksi()
     {
+
+        $response = $this->_client->request('GET', 'produksi/sudahproduksi');
+
         $data = [
-            'barangjadi' => json_decode($this->curl->simple_get('http://127.0.0.1:8000/produksi/sudahproduksi/')),
+            'barangjadi' => json_decode($response->getBody()->getContents()),
         ];
+
+
         $this->load->view('layout/header');
         $this->load->view('produksi/sudahproduksi', $data);
         $this->load->view('layout/footer');
